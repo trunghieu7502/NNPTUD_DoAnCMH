@@ -1,0 +1,42 @@
+extends ../layout
+
+block title
+  | Trang Quản Trị Admin
+
+block content
+  .container.mt-4
+    h2.mb-4.text-primary Quản Trị Hệ Thống
+
+    .row.g-4
+      .col-md-3
+        .card.text-bg-primary.shadow
+          .card-body.text-center
+            i.fas.fa-users.fa-2x.mb-2
+            h5.mb-0 Quản lý người dùng
+            a.btn.btn-sm.btn-light.mt-2(href='/admin/users') Xem tất cả
+
+      .col-md-3
+        .card.text-bg-success.shadow
+          .card-body.text-center
+            i.fas.fa-box.fa-2x.mb-2
+            h5.mb-0 Quản lý sản phẩm
+            a.btn.btn-sm.btn-light.mt-2(href='../products/') Xem tất cả
+
+      .col-md-3
+        .card.text-bg-warning.shadow
+          .card-body.text-center
+            i.fas.fa-tags.fa-2x.mb-2
+            h5.mb-0 Quản lý danh mục
+            a.btn.btn-sm.btn-light.mt-2(href='../categories') Xem tất cả
+
+      .col-md-3
+        .card.text-bg-danger.shadow
+          .card-body.text-center
+            i.fas.fa-receipt.fa-2x.mb-2
+            h5.mb-0 Quản lý đơn hàng
+            a.btn.btn-sm.btn-light.mt-2(href='/admin/orders') Xem tất cả
+
+    .row.mt-5
+      .col-12
+        .alert.alert-info
+          | Chào mừng bạn đến với hệ thống quản lý. Hãy sử dụng các chức năng ở trên để theo dõi và kiểm soát dữ liệu trong hệ thống.

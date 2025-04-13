@@ -1,0 +1,130 @@
+extends layout
+
+block title
+  | Xác Nhận Đơn Hàng
+
+block content
+  h1.text-center.mb-4 XÁC NHẬN ĐƠN HÀNG
+
+  .container
+    .row
+      // Cột trái - Form thông tin giao hàng
+      .col-md-6
+        .p-4(style='background: #f8f9fa; border-radius: 1rem; box-shadow: 0 4px 8px rgba(0,0,0,0.1)')
+          h5.mb-3 Thông tin khách hàng
+          p 
+            strong Email: 
+            | #{user.email}
+          p 
+            strong Tên: 
+            | #{user.username}
+          p 
+            strong Số điện thoại: 
+            | #{user.phone || 'Chưa cung cấp'}
+
+          hr
+          h5.mb-3 Thông tin giao hàng
+          form(action='/checkout/submit', method='POST')
+            .form-group.mb-3
+              label(for='address') Địa chỉ giao hàng
+              input.form-control(type='text', name='address', id='address', required)
+
+            .form-group.mb-3
+              label(for='city') Tỉnh / Thành
+              select.form-control(name='city', id='city', required)
+                option(value='') Chọn Tỉnh / Thành
+                option(value='Hà Nội') Hà Nội
+                option(value='TP Hồ Chí Minh') TP Hồ Chí Minh
+                option(value='Đà Nẵng') Đà Nẵng
+
+            .form-group.mb-3
+              label(for='district') Quận / Huyện
+              select.form-control(name='district', id='district', required)
+
+            .form-group.mb-3
+              label(for='ward') Phường / Xã
+              select.form-control(name='ward', id='ward', required)
+
+            .form-group.mb-3
+              label(for='paymentMethod') Phương thức thanh toán
+              select.form-control(name='paymentMethod', id='paymentMethod', required)
+                option(value='COD') Thanh toán khi giao hàng (COD)
+                option(value='VNPAY') Chuyển khoản VNPAY
+
+            .form-group.mb-3
+              label(for='notes') Ghi chú
+              input.form-control(type='text', name='notes', id='notes')
+
+            button.btn.btn-primary.w-100(type='submit') Hoàn tất đơn hàng
+
+      // Cột phải - Chi tiết đơn hàng
+      .col-md-6
+        .p-4(style='background: #f8f9fa; border-radius: 1rem; box-shadow: 0 4px 8px rgba(0,0,0,0.1)')
+          h5.mb-3 Chi tiết đơn hàng
+          table.table
+            thead
+              tr
+                th Tên sản phẩm
+                th Hình ảnh
+                th Số lượng
+                th Giá
+                th Tổng giá
+            tbody
+              each item in cart.items
+                tr
+                  td= item.productId.name
+                  td 
+                    img.img-thumbnail(src=item.productId.imageUrl, width='100')
+                  td= item.quantity
+                  td= item.productId.price.toLocaleString() + ' VNĐ'
+                  td= (item.productId.price * item.quantity).toLocaleString() + ' VNĐ'
+
+          p Mã giảm giá: 
+            strong #{couponCode || 'Không có'}
+          p Giảm giá: 
+            strong #{discountAmount.toLocaleString()} VNĐ
+
+          h4.text-end Tổng cộng: #{totalAfterDiscount.toLocaleString()} VNĐ
+
+  script.
+    const data = {
+      "Hà Nội": {
+        "Ba Đình": ["Phúc Xá", "Trúc Bạch", "Vĩnh Phúc", "Cống Vị"],
+        "Hoàn Kiếm": ["Phúc Tân", "Đồng Xuân", "Cửa Đông", "Hàng Mã"]
+      },
+      "TP Hồ Chí Minh": {
+        "Quận 1": ["Bến Nghé", "Bến Thành"],
+        "Quận 2": ["An Phú", "Bình An"]
+      },
+      "Đà Nẵng": {
+        "Hải Châu": ["Hòa Cường Bắc", "Hòa Cường Nam"],
+        "Thanh Khê": ["An Khê", "Chính Gián"]
+      }
+    };
+
+    document.getElementById("city").addEventListener("change", function () {
+      const city = this.value;
+      const districtSelect = document.getElementById("district");
+      districtSelect.innerHTML = "<option value=''>Chọn Quận / Huyện</option>";
+      if (city && data[city]) {
+        Object.keys(data[city]).forEach(d => {
+          const opt = document.createElement("option");
+          opt.value = opt.textContent = d;
+          districtSelect.appendChild(opt);
+        });
+      }
+    });
+
+    document.getElementById("district").addEventListener("change", function () {
+      const city = document.getElementById("city").value;
+      const district = this.value;
+      const wardSelect = document.getElementById("ward");
+      wardSelect.innerHTML = "<option value=''>Chọn Phường / Xã</option>";
+      if (city && district && data[city][district]) {
+        data[city][district].forEach(w => {
+          const opt = document.createElement("option");
+          opt.value = opt.textContent = w;
+          wardSelect.appendChild(opt);
+        });
+      }
+    });

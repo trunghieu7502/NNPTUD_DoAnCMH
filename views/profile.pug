@@ -1,0 +1,54 @@
+extends layout
+
+block title
+  | Thông Tin Cá Nhân
+
+block content
+  .container.mt-5
+    h2.mb-4 Thông Tin Cá Nhân
+
+    .card.shadow.p-4
+      h5.text-primary.mb-3 Xin chào, #{user.username}
+
+      form#editForm(action='/profile/update', method='POST')
+        .mb-3
+          label(for='email') Email
+          input#email.form-control(type='email', name='email', value=user.email, readonly)
+
+        .mb-3
+          label(for='fullname') Họ tên
+          input#fullname.form-control(type='text', name='fullname', value=user.fullname || '', readonly)
+
+        .mb-3
+          label(for='phone') Số điện thoại
+          input#phone.form-control(type='text', name='phone', value=user.phone || '', readonly)
+
+        p.mt-2
+          strong Ngày tạo tài khoản:
+          | #{user.createdAt.toLocaleDateString('vi-VN')}
+
+        .d-flex.gap-2.mt-3
+          button#editBtn.btn.btn-primary(type='button') Chỉnh sửa
+          button#saveBtn.btn.btn-success(type='submit', hidden) Lưu
+          a#cancelBtn.btn.btn-secondary(href='/profile', hidden) Hủy
+          a.btn.btn-outline-danger(href='/profile/change-password') Đổi mật khẩu
+
+  // ✅ Script nội bộ để bật chế độ chỉnh sửa
+  script.
+    window.addEventListener("load", function () {
+      const inputs = ["email", "fullname", "phone"];
+      const editBtn = document.getElementById("editBtn");
+      const saveBtn = document.getElementById("saveBtn");
+      const cancelBtn = document.getElementById("cancelBtn");
+
+      editBtn.addEventListener("click", () => {
+        inputs.forEach(id => {
+          const el = document.getElementById(id);
+          el.removeAttribute("readonly");
+          el.classList.add("border-primary");
+        });
+        editBtn.hidden = true;
+        saveBtn.hidden = false;
+        cancelBtn.hidden = false;
+      });
+    });

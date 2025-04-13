@@ -1,0 +1,29 @@
+extends layout
+
+block title
+  | Trang Chủ
+
+block content
+  .container
+    h2.text-center.mb-4 Featured Products
+
+    if products && products.length > 0
+      .row.row-cols-1.row-cols-sm-2.row-cols-md-3.row-cols-lg-4.g-4
+        each product in products
+          .col
+            .card.h-100.text-center.border-0.shadow-sm
+              a(href='/products/' + product._id)
+                if product.imageUrl
+                  img.card-img-top(src=product.imageUrl, alt=product.name, style="height: 220px; object-fit: cover")
+              .card-body.p-2
+                h6.card-title.text-primary= product.name
+                p.mb-0.fw-semibold.text-dark #{product.price.toLocaleString()} VND
+
+              .card-footer.bg-transparent.border-0
+                form(action='/carts/add/' + product._id, method='POST')
+                  button.btn.btn-sm.btn-outline-primary.w-100(type='submit')
+                    i.fas.fa-cart-plus.me-2
+                    | Thêm vào giỏ
+    else
+      .text-center.text-muted
+        p Không có sản phẩm nào.

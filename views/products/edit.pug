@@ -1,0 +1,39 @@
+extends ../layout
+
+block title
+  | Chỉnh sửa sản phẩm
+
+block content
+  .container.mt-5
+    h2.mb-4 Chỉnh sửa sản phẩm
+    form(action='/products/' + product._id + '?_method=PUT', method='POST', enctype='multipart/form-data')
+      .mb-3
+        label.form-label(for='name') Tên sản phẩm
+        input.form-control(type='text', name='name', required, value=product.name)
+
+      .mb-3
+        label.form-label(for='price') Giá
+        input.form-control(type='number', name='price', min='1000', required, value=product.price)
+
+      .mb-3
+        label.form-label(for='stock') Số lượng tồn
+        input.form-control(type='number', name='stock', min='0', required, value=product.stock)
+
+      .mb-3
+        label.form-label(for='description') Mô tả
+        input.form-control(type='text', name='description', required, value=product.description)
+
+      .mb-3
+        label.form-label(for='image') Ảnh mới (tuỳ chọn)
+        input.form-control(type='file', name='image', accept='image/*')
+
+      .mb-3
+        label.form-label(for='category') Danh mục
+        select.form-select(name='category', required)
+          each cat in categories
+            if product.category && product.category._id.toString() === cat._id.toString()
+              option(value=cat._id, selected)= cat.name
+            else
+              option(value=cat._id)= cat.name
+
+      button.btn.btn-primary(type='submit') Cập nhật sản phẩm

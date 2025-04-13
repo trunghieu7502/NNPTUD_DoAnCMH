@@ -1,0 +1,48 @@
+extends layout
+
+block title
+  | Đơn hàng hoàn tất
+
+block content
+  .container.mt-5
+    h2 Đơn hàng của bạn đã được hoàn tất!
+    p Cảm ơn bạn đã mua hàng tại cửa hàng chúng tôi. Dưới đây là thông tin chi tiết về đơn hàng của bạn:
+
+    p
+      strong Mã đơn hàng: 
+      | #{order._id}
+    p
+      strong Ngày đặt hàng: 
+      | #{order.orderDate.toLocaleDateString('vi-VN')}
+    p
+      strong Địa chỉ giao hàng: 
+      | #{order.shippingAddress}, #{order.ward}, #{order.district}, #{order.city}
+    p
+      strong Phương thức thanh toán: 
+      | #{order.paymentMethod}
+    p
+      strong Tổng giá trị: 
+      | #{order.totalPrice.toLocaleString()} VNĐ
+
+    h3 Chi tiết đơn hàng
+
+    table.table
+      thead
+        tr
+          th Tên sản phẩm
+          th Ảnh
+          th Số lượng
+          th Giá
+          th Tổng giá
+      tbody
+        each item in order.orderDetails
+          tr
+            td= item.product.name
+            td 
+              img(src=item.product.imageUrl, width='100', height='100', alt=item.product.name)
+            td= item.quantity
+            td= item.price.toLocaleString() + ' VNĐ'
+            td= (item.price * item.quantity).toLocaleString() + ' VNĐ'
+
+    br
+    a.btn.btn-primary(href='/') Trở Về

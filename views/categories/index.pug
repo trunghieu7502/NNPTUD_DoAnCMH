@@ -1,0 +1,37 @@
+extends ../layout
+
+block title
+  | Danh sách danh mục
+
+block content
+  .container.mt-5
+    .d-flex.justify-content-between.align-items-center.mb-4
+      h2.mb-0 Danh sách danh mục
+      <!--if currentUser && currentUser.roleId && currentUser.roleId === '67e606f3fbf1b0172eed744d'-->
+        a.btn.btn-success(href='/categories/create') + Thêm danh mục
+
+    if categories.length > 0
+      table.table.table-bordered.table-hover
+        thead.table-light
+          tr
+            th Tên danh mục
+            th Mô tả
+            <!--if currentUser && currentUser.roleId && currentUser.roleId === '67e606f3fbf1b0172eed744d'-->
+              th.text-center Hành động
+        tbody
+          each category in categories
+            tr
+              td= category.name
+              td= category.description || 'Không có mô tả'
+              <!--if currentUser && currentUser.roleId && currentUser.roleId === '67e606f3fbf1b0172eed744d'-->
+                td.text-center
+                  a.btn.btn-sm.btn-warning(href='/categories/edit/' + category._id) 
+                    i.fas.fa-edit 
+                    | Sửa
+                  form.d-inline-block.delete-form(action='/categories/' + category._id, method='POST')
+                    input(type='hidden', name='_method', value='DELETE')
+                    button.btn.btn-sm.btn-danger(type='submit')
+                      i.fas.fa-trash 
+                      | Xoá
+    else
+      .alert.alert-info Không có danh mục nào.

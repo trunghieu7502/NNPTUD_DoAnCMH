@@ -1,0 +1,26 @@
+extends ../layout
+
+block title
+  | Chi tiết sản phẩm
+
+block content
+  .container.mt-5
+    .row
+      .col-md-5
+        if product.imageUrl
+          img.img-fluid.rounded(src=product.imageUrl, alt=product.name)
+      .col-md-7
+        h3.fw-bold= product.name
+        p.text-muted Giá: #{product.price.toLocaleString()} VND
+        p.text-muted Danh mục: #{product.category ? product.category.name : 'Không có'}
+        p.text-muted Số lượng còn lại: #{product.stock}
+        p.text-muted Mô tả: #{product.description || 'Không có mô tả'}
+
+        // Nút thao tác
+        button.btn.btn-secondary.disabled Sản phẩm đã hết hàng
+        button.btn.btn-outline-danger.ms-2 Yêu Thích
+        button.btn.btn-outline-danger.ms-2 So Sánh
+
+    hr.my-5
+    h5.text-center.text-primary GỢI Ý SẢN PHẨM
+    // Gợi ý: đoạn này bạn có thể thêm danh sách sản phẩm khác bằng JS hoặc dữ liệu từ backend

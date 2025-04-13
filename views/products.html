@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <header>
+        <h1>Products</h1>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="categories.html">Categories</a>
+        </nav>
+    </header>
+
+    <main>
+        <h2>Product List</h2>
+        <div id="product-list"></div>
+        <button onclick="createProduct()">Create Product</button>
+    </main>
+
+    <script>
+        // Fetch and display products
+        fetch('/products')
+            .then(response => response.json())
+            .then(data => {
+                const productList = document.getElementById('product-list');
+                data.forEach(product => {
+                    const productItem = document.createElement('div');
+                    productItem.textContent = `${product.name} - $${product.price}`;
+                    productList.appendChild(productItem);
+                });
+            });
+
+        // Function to create a product
+        function createProduct() {
+            const name = prompt('Enter the product name:');
+            const price = prompt('Enter the product price:');
+            const category = prompt('Enter the category ID:');
+
+            if (name && price && category) {
+                fetch('/products', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, price, category })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('Product created successfully');
+                            location.reload();  // Reload page to show updated list
+                        } else {
+                            alert('Error creating product');
+                        }
+                    });
+            }
+        }
+    </script>
+</body>
+
+</html>

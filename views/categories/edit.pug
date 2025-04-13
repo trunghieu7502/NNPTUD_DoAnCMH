@@ -1,0 +1,21 @@
+extends ../layout
+
+block title
+  | Chỉnh sửa danh mục
+
+block content
+  .container.mt-5
+    .row.justify-content-center
+      .col-md-6
+        h2.mb-4.text-center Chỉnh sửa danh mục
+
+        form(action='/categories/' + category._id + '?_method=PUT', method='POST')
+          .mb-3
+            label.form-label(for='name') Tên danh mục:
+            input.form-control(type='text', id='name', name='name', required, value=category.name)
+
+          .mb-3
+            label.form-label(for='description') Mô tả:
+            input.form-control(type='text', id='description', name='description', value=category.description)
+
+          button.btn.btn-primary(type='submit') Cập nhật danh mục

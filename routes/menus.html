@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu</title>
+    <style>
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            margin: 5px 0;
+        }
+        a {
+            text-decoration: none;
+            color: blue;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h1>Menu</h1>
+    <ul id="menu-container">
+        <!-- Menu items will be dynamically rendered here -->
+    </ul>
+    <script>
+        // Function to render the menu
+        function renderMenu(menu, container) {
+            menu.forEach(item => {
+                const li = document.createElement('li');
+                const a = document.createElement('a');
+                a.href = item.url;
+                a.textContent = item.text;
+                li.appendChild(a);
+
+                if (item.children && item.children.length > 0) {
+                    const ul = document.createElement('ul');
+                    renderMenu(item.children, ul);
+                    li.appendChild(ul);
+                }
+
+                container.appendChild(li);
+            });
+        }
+
+        // Fetch menu data from the server and render it
+        async function fetchAndRenderMenu() {
+            try {
+                const response = await fetch('http://localhost:3000/menus');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch menu data');
+                }
+                const menuData = await response.json();
+                const menuContainer = document.getElementById('menu-container');
+                renderMenu(menuData.data, menuContainer); // Assuming the data is in `data` field
+            } catch (error) {
+                console.error('Error fetching menu data:', error);
+            }
+        }
+
+        // Call the function to fetch and render the menu
+        fetchAndRenderMenu();
+    </script>
+</body>
+</html>

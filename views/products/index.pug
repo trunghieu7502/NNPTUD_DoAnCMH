@@ -1,0 +1,41 @@
+extends ../layout
+
+block title
+  | Danh sách sản phẩm
+
+block content
+  .container.mt-5
+    h2.mb-4 Danh sách sản phẩm
+    <!--if currentUser && currentUser.roleId && currentUser.roleId === '67e606f3fbf1b0172eed744d'-->
+      a.btn.btn-primary.mb-3(href="/products/create") + Thêm sản phẩm
+
+    if products.length > 0
+      table.table.table-bordered.table-striped
+        thead
+          tr
+            th Ảnh
+            th Tên sản phẩm
+            th Giá
+            th Số lượng tồn
+            th Danh mục
+            <!--if currentUser && currentUser.roleId && currentUser.roleId === '67e606f3fbf1b0172eed744d'-->
+              th Hành động
+        tbody
+          each product in products
+            tr
+              td
+                if product.imageUrl
+                  img(src=product.imageUrl, alt='Ảnh sản phẩm', width='100')
+                else
+                  span Không có ảnh
+              td= product.name
+              td= product.price + ' VND'
+              td= product.stock
+              td= product.category && product.category.name ? product.category.name : 'Không có danh mục'
+              <!--if currentUser && currentUser.roleId && currentUser.roleId === '67e606f3fbf1b0172eed744d'-->
+                td
+                  a.btn.btn-sm.btn-warning(href='/products/edit/' + product._id) Sửa
+                  form.d-inline(action='/products/' + product._id + '?_method=DELETE', method='POST')
+                    button.btn.btn-sm.btn-danger(type='submit') Xoá
+    else
+      p.text-muted Không có sản phẩm nào.

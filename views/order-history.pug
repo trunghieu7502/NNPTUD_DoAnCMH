@@ -1,0 +1,33 @@
+extends layout
+
+block title
+  | Lịch sử đơn hàng
+
+block content
+  .container.mt-5
+    h2.mb-4 Lịch sử đơn hàng
+
+    if orders.length > 0
+      each order in orders
+        .card.mb-4.shadow
+          .card-header
+            strong Đơn hàng ngày #{order.createdAt.toLocaleDateString('vi-VN')} - Tổng tiền: #{order.totalPrice.toLocaleString()} VND
+          .card-body
+            table.table
+              thead
+                tr
+                  th Sản phẩm
+                  th Ảnh
+                  th Số lượng
+                  th Giá
+                  th Thành tiền
+              tbody
+                each item in order.items
+                  tr
+                    td= item.productId.name
+                    td: img(src=item.productId.imageUrl, width='80')
+                    td= item.quantity
+                    td= item.price.toLocaleString() + ' VND'
+                    td= (item.price * item.quantity).toLocaleString() + ' VND'
+    else
+      p.text-muted Bạn chưa có đơn hàng nào.

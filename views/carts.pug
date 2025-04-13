@@ -1,0 +1,47 @@
+extends layout
+
+block title
+  | Giỏ hàng
+
+block content
+  .container
+    h2.mb-4 Giỏ hàng của bạn
+
+    if cart && cart.items.length > 0
+      table.table.table-striped
+        thead
+          tr
+            th Ảnh
+            th Tên
+            th Giá
+            th Số lượng
+            th Tổng
+            th
+        tbody
+          each item in cart.items
+            tr
+              td
+                img(src=item.productId.imageUrl, width='60')
+              td= item.productId.name
+              td= item.productId.price.toLocaleString() + ' VND'
+              td= item.quantity
+              td= (item.productId.price * item.quantity).toLocaleString() + ' VND'
+              td
+                form(action='/carts/remove/' + item.productId._id, method='POST')
+
+                  input(type='hidden', name='_method', value='DELETE')
+                  button.btn.btn-sm.btn-danger(type='submit')
+                    i.fas.fa-trash
+        tfoot
+          tr
+            td(colspan='4').text-end.fw-bold Tổng tiền:
+            td.fw-bold= total.toLocaleString() + ' VND'
+            td
+
+      // Nút thanh toán
+      form(action='/carts/checkout', method='POST')
+        button.btn.btn-success.mt-3.w-100(type='submit')
+          i.fas.fa-credit-card.mr-2
+          | Thanh toán
+    else
+      p.text-muted Không có sản phẩm nào trong giỏ hàng.
