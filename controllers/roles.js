@@ -16,8 +16,8 @@ module.exports = {
         });
         return await newRole.save();
     },
-    UpdateARole: async function (id, name, description) {
-        const updated = await roleSchema.findByIdAndUpdate(id, { name: name }, {description: description }, { new: true });
+    UpdateARole: async function (id, name) {
+        const updated = await roleSchema.findByIdAndUpdate(id, { name: name }, { new: true });
         if (!updated) throw new Error("Không tìm thấy quyền để cập nhật");
         return updated;
     },

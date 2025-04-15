@@ -26,7 +26,8 @@ module.exports = {
         username: username,
         password: password,
         email: email,
-        role: roleObj._id
+        role: roleObj._id,
+        status: true
       });
       return await newUser.save();
     } catch (error) {
@@ -48,21 +49,25 @@ module.exports = {
   },
   CheckLogin: async function (username, password) {
     let user = await userSchema.findOne({ username: username });
-    if (!user || !bcrypt.compareSync(password, user.password)) {
-      throw new Error("username hoac password khong dung");
-    }
+
+    if (!user) throw new Error("Tài khoản không tồn tại");
+    if (!user.status) throw new Error("Tài khoản đã bị khóa");
+
+    const isPasswordValid = bcrypt.compareSync(password, user.password);
+    if (!isPasswordValid) throw new Error("Mật khẩu không đúng");
+
     return user._id;
-  },
+  }
+  ,
   Change_Password: async function (user, oldpassword, newpassword) {
     if (!bcrypt.compareSync(oldpassword, user.password)) {
       throw new Error("oldpassword khong dung");
     }
-    const salt = bcrypt.genSaltSync(10);
-    user.password = bcrypt.hashSync(newpassword, salt);
+    user.password = newpassword;
     return await user.save();
   },
   ListUsersForManagement: async function () {
-    return await userSchema.find({ status: true }).populate('role');
+    return await userSchema.find({}).populate('role');
   },
   DisableUserById: async function (id) {
     const result = await userSchema.findByIdAndUpdate(id, { status: false }, { new: true });

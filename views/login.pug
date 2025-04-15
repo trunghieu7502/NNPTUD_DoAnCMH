@@ -9,14 +9,22 @@ block content
       .card.shadow
         .card-body
           h3.text-center.mb-4 Đăng Nhập
+
+          //- Hiển thị thông báo lỗi nếu có
+          if error
+            .alert.alert-danger.text-center #{error}
+
           form(action='/auth/login', method='POST')
             .mb-3
               label.form-label(for='username') Tên người dùng
               input.form-control(type='text', id='username', name='username', required)
+
             .mb-3
               label.form-label(for='password') Mật khẩu
               input.form-control(type='password', id='password', name='password', required)
+
             button.btn.btn-success.w-100(type='submit') Đăng Nhập
+
           .text-center.mt-3
             span Chưa có tài khoản? 
             a(href='/auth/signup') Đăng ký

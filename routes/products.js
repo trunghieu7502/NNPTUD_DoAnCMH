@@ -10,13 +10,13 @@ let constants = require('../utils/constants');
 let { check_authentication } = require('../utils/check_auth');
 let { check_authorization } = require('../utils/check_auth');
 
-// ✅ Cấu hình method override để dùng PUT và DELETE trong form
+// ✅ Method override cho PUT / DELETE
 router.use(methodOverride('_method'));
 
-// ✅ Cấu hình multer để upload ảnh
+// ✅ Cấu hình multer để xử lý file ảnh
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, path.join(__dirname, '../public/uploads')); // thư mục ảnh
+        cb(null, path.join(__dirname, '../public/uploads'));
     },
     filename: function (req, file, cb) {
         const uniqueName = Date.now() + '-' + file.originalname;
@@ -50,7 +50,7 @@ router.get('/edit/:id', check_authentication, check_authorization(constants.MOD_
     }
 });
 
-// ✅ GET: Danh sách sản phẩm (HTML)
+// ✅ GET: Danh sách sản phẩm
 router.get('/', async function (req, res, next) {
     try {
         const products = await productSchema.find({ isDeleted: false }).populate('category');
@@ -60,15 +60,12 @@ router.get('/', async function (req, res, next) {
     }
 });
 
-// ✅ POST: Tạo mới sản phẩm
+// ✅ POST: Tạo sản phẩm
 router.post('/', check_authentication, check_authorization(constants.MOD_PERMISSION), upload.single('image'), async function (req, res, next) {
     try {
         const { name, price, stock, description, category } = req.body;
-
         const categoryObj = await categorySchema.findById(category);
-        if (!categoryObj) {
-            return res.status(404).send({ success: false, message: 'Không tìm thấy category' });
-        }
+        if (!categoryObj) return res.status(404).send('Không tìm thấy danh mục');
 
         const newProduct = new productSchema({
             name,
@@ -83,11 +80,47 @@ router.post('/', check_authentication, check_authorization(constants.MOD_PERMISS
         await newProduct.save();
         res.redirect('/products');
     } catch (error) {
-        res.status(400).send({ success: false, message: error.message });
+        res.status(400).send("Lỗi tạo sản phẩm: " + error.message);
     }
 });
 
-// ✅ GET: Chi tiết sản phẩm (JSON)
+// ✅ PUT: Cập nhật sản phẩm
+router.put('/:id', check_authentication, check_authorization(constants.MOD_PERMISSION), upload.single('image'), async function (req, res, next) {
+    try {
+        const { name, price, stock, description, category } = req.body;
+
+        const updatedFields = {
+            name,
+            price,
+            stock,
+            description,
+            category,
+            slug: slugify(name, { lower: true })
+        };
+
+        if (req.file) {
+            updatedFields.imageUrl = `/uploads/${req.file.filename}`;
+        }
+
+        await productSchema.findByIdAndUpdate(req.params.id, updatedFields, { new: true });
+
+        res.redirect('/products');
+    } catch (error) {
+        res.status(400).send("Lỗi cập nhật sản phẩm: " + error.message);
+    }
+});
+
+// ✅ DELETE: Xoá mềm
+router.delete('/:id', check_authentication, check_authorization(constants.MOD_PERMISSION), async function (req, res, next) {
+    try {
+        await productSchema.findByIdAndUpdate(req.params.id, { isDeleted: true }, { new: true });
+        res.redirect('/products');
+    } catch (error) {
+        res.status(400).send("Lỗi xoá sản phẩm: " + error.message);
+    }
+});
+
+// ✅ GET: Chi tiết sản phẩm
 router.get('/:id', async function (req, res, next) {
     try {
         const product = await productSchema.findById(req.params.id).populate('category');
@@ -97,37 +130,6 @@ router.get('/:id', async function (req, res, next) {
         res.render('products/details', { product });
     } catch (err) {
         next(err);
-    }
-});
-
-
-// ✅ PUT: Cập nhật sản phẩm
-router.put('/:id', check_authentication, check_authorization(constants.MOD_PERMISSION), async function (req, res, next) {
-    try {
-        const { name, price, stock, description, category } = req.body;
-
-        const updatedObj = {
-            ...(name && { name }),
-            ...(price && { price }),
-            ...(stock && { stock }),
-            ...(description !== undefined && { description }),
-            ...(category && { category })
-        };
-
-        await productSchema.findByIdAndUpdate(req.params.id, updatedObj, { new: true });
-        res.redirect('/products');
-    } catch (error) {
-        res.status(400).send({ success: false, message: error.message });
-    }
-});
-
-// ✅ DELETE: Xoá mềm sản phẩm
-router.delete('/:id', check_authentication, check_authorization(constants.MOD_PERMISSION), async function (req, res, next) {
-    try {
-        await productSchema.findByIdAndUpdate(req.params.id, { isDeleted: true }, { new: true });
-        res.redirect('/products');
-    } catch (error) {
-        res.status(400).send({ success: false, message: error.message });
     }
 });
 

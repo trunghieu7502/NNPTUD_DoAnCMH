@@ -34,20 +34,7 @@ router.get('/', async (req, res, next) => {
     }
 });
 
-router.get('/:id', async function(req, res, next) {
-    try {
-        let category = await categorySchema.findById(req.params.id);
-        res.send({
-            success:true,
-            data:category
-        });
-    } catch (error) {
-        res.status(404).send({
-            success:false,
-            message:error.message
-        })
-    }
-});
+
 
 // POST: tạo mới danh mục
 router.post('/', check_authentication, check_authorization(constants.MOD_PERMISSION), async (req, res, next) => {
@@ -87,6 +74,33 @@ router.delete('/:id', check_authentication, check_authorization(constants.MOD_PE
         res.redirect('/categories');
     } catch (error) {
         res.status(400).send("Lỗi xoá danh mục: " + error.message);
+    }
+});
+
+router.get('/deleted', check_authentication, check_authorization(constants.ADMIN_PERMISSION), async (req, res) => {
+    try {
+        const deletedCategories = await categorySchema.find({ isDeleted: true });
+        res.render('categories/deleted', { deletedCategories });
+    } catch (error) {
+        res.status(500).send("Lỗi khi tải danh mục đã xoá");
+    }
+});
+
+// GET: danh mục theo ID (nên để cuối cùng)
+router.get('/:id', async function (req, res, next) {
+    try {
+        const category = await categorySchema.findById(req.params.id); // Không lọc isDeleted
+
+        if (!category) throw new Error("Không tìm thấy danh mục");
+        res.send({
+            success: true,
+            data: category
+        });
+    } catch (error) {
+        res.status(404).send({
+            success: false,
+            message: error.message
+        });
     }
 });
 

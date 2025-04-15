@@ -1,0 +1,27 @@
+extends ../layout
+
+block title
+  | Chi tiết người dùng
+
+block content
+  .container.mt-5
+    h2.mb-4.text-primary Thông tin người dùng
+
+    ul.list-group
+      li.list-group-item
+        strong Tên đăng nhập: 
+        | #{user.username}
+      li.list-group-item
+        strong Email: 
+        | #{user.email}
+      li.list-group-item
+        strong Họ tên: 
+        | #{user.fullname || 'Chưa cập nhật'}
+      li.list-group-item
+        strong Vai trò: 
+        | #{user.role && user.role.name ? user.role.name : 'Chưa phân quyền'}
+      li.list-group-item
+        strong Trạng thái: 
+        | #{user.status ? 'Hoạt động' : 'Bị khoá'}
+
+    a.btn.btn-secondary.mt-3(href='/users/management') Quay lại

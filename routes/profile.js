@@ -3,6 +3,7 @@ const router = express.Router();
 const User = require('../schemas/user');
 const bcrypt = require('bcrypt');
 const { check_authentication } = require('../utils/check_auth');
+const userController = require('../controllers/users');
 
 // GET: Profile page
 router.get('/', check_authentication, async (req, res) => {
@@ -46,21 +47,11 @@ router.post('/change-password', check_authentication, async (req, res) => {
     try {
         const user = await User.findById(req.session.userId);
         if (!user) return res.redirect('/auth/login');
-
-        const isValid = bcrypt.compareSync(oldPassword, user.password);
-        if (!isValid) {
-            return res.render('change-password', { error: 'Mật khẩu hiện tại không đúng' });
-        }
-
-        // Hash mật khẩu mới
-        const salt = bcrypt.genSaltSync(10);
-        user.password = bcrypt.hashSync(newPassword, salt);
-        await user.save();
-
+        
+        await userController.Change_Password(user, oldPassword, newPassword);
         res.render('change-password', { success: 'Đổi mật khẩu thành công!' });
     } catch (err) {
-        console.error(err);
-        res.render('change-password', { error: 'Lỗi hệ thống' });
+        res.render('change-password', { error: err.message });
     }
 });
 

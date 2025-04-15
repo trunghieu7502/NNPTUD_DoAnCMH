@@ -32,13 +32,25 @@ router.put('/:id', check_authentication, async function (req, res, next) {
 
 router.get('/management', check_authentication, check_authorization(constants.ADMIN_PERMISSION), async (req, res) => {
   try {
-    const users = await userController.ListUsersForManagement();
+    const users = await userController.ListUsersForManagement(); // ✅ CHÍNH XÁC
     res.render('admin/users', { users });
   } catch (error) {
     CreateErrorResponse(res, 500, error.message);
   }
 });
 
+
+// XEM chi tiết user
+router.get('/view/:id', check_authentication, check_authorization(constants.ADMIN_PERMISSION), async (req, res) => {
+  try {
+    const user = await userController.GetUserByID(req.params.id);
+    if (!user) return res.status(404).send("Không tìm thấy người dùng");
+    res.render('admin/user-detail', { user });
+  } catch (err) {
+    res.status(500).send("Lỗi: " + err.message);
+  }
+});
+// XOÁ user (status = false)
 router.post('/delete/:id', check_authentication, check_authorization(constants.ADMIN_PERMISSION), async (req, res) => {
   try {
     await userController.DisableUserById(req.params.id);

@@ -23,8 +23,9 @@ block content
               td= user.fullname
               td= user.role && user.role.name || 'Chưa phân quyền'
               td.text-center
-                a.btn.btn-sm.btn-warning(href='/users/' + user._id) Xem
-                form.d-inline-block(method='POST', action='/users/' + user._id + '?_method=DELETE')
-                  button.btn.btn-sm.btn-danger(type='submit') Xoá
+                a.btn.btn-sm.btn-warning(href='/users/view/' + user._id) Xem
+                form.d-inline-block(method='POST', action='/users/delete/' + user._id)
+                  button.btn.btn-sm.btn-danger(type='submit', onclick='return confirm("Bạn có chắc chắn muốn khoá tài khoản này?")') Khoá
+
     else
       .alert.alert-info Không có người dùng nào

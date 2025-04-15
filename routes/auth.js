@@ -39,8 +39,8 @@ router.post('/login', LoginValidator, validate, async function (req, res, next) 
         CreateCookieResponse(res, 'token', token, exp);
         // Chuyển hướng tới trang chủ sau đăng nhập
         res.redirect('/');
-    } catch (error) {
-        next(error);
+    } catch (err) {
+        res.render('login', { error: err.message });
     }
 });
 
@@ -61,15 +61,15 @@ router.get('/me', check_authentication, function (req, res, next) {
     CreateSuccessResponse(res, 200, req.user)
 })
 router.post('/change_password', ChangePasswordValidator, validate, check_authentication, function (req, res, next) {
-        try {
-            let oldpassword = req.body.oldpassword;
-            let newpassword = req.body.newpassword;
-            let result = userController.Change_Password(req.user, oldpassword, newpassword)
-            CreateSuccessResponse(res, 200, result)
-        } catch (error) {
-            next(error)
-        }
-    })
+    try {
+        let oldpassword = req.body.oldpassword;
+        let newpassword = req.body.newpassword;
+        let result = userController.Change_Password(req.user, oldpassword, newpassword)
+        CreateSuccessResponse(res, 200, result)
+    } catch (error) {
+        next(error)
+    }
+})
 
 router.post('/forgotpassword', async function (req, res, next) {
     try {
