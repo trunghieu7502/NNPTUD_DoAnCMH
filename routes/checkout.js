@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const Cart = require('../schemas/cart');
 const Order = require('../schemas/order');
+const Product = require('../schemas/product');
 const { check_authentication } = require('../utils/check_auth');
 
 // GET: Trang checkout
@@ -37,6 +38,16 @@ router.post('/submit', check_authentication, async (req, res) => {
         const { address, city, district, ward, paymentMethod, notes } = req.body;
 
         let total = 0;
+        for (const item of cart.items) {
+            const product = item.productId;
+            if (product.stock < item.quantity) {
+                return res.status(400).send(`Sản phẩm ${product.name} không đủ số lượng trong kho`);
+            }
+            await Product.findByIdAndUpdate(product._id, {
+                $inc: { stock: -item.quantity }
+            });
+            total += product.price * item.quantity;
+        }
         const orderItems = cart.items.map(item => {
             total += item.productId.price * item.quantity;
             return {
@@ -59,14 +70,12 @@ router.post('/submit', check_authentication, async (req, res) => {
 
         await newOrder.save();
 
-        // Thông tin chi tiết sản phẩm để hiển thị
         const orderDetails = cart.items.map(item => ({
             product: item.productId,
             quantity: item.quantity,
             price: item.productId.price
         }));
 
-        // Xóa giỏ hàng
         cart.items = [];
         await cart.save();
 

@@ -19,7 +19,8 @@ let cartSchema = new mongoose.Schema({
   items: [
     {
       productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },
-      quantity: Number
+      quantity: Number,
+      stock: Number
     }
   ]
 });

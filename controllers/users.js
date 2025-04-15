@@ -15,7 +15,7 @@ module.exports = {
   GetUserByToken: async function (token) {
     return await userSchema.findOne({ resetPasswordToken: token }).populate('role')
   },
-  CreateAnUser: async function (username, password, email, role = 'user') {
+  CreateAnUser: async function (username, password, email, phone, role = 'user') {
     try {
       let roleObj = await roleSchema.findOne({ name: role });
       if (!roleObj) {
@@ -26,6 +26,7 @@ module.exports = {
         username: username,
         password: password,
         email: email,
+        phone: phone,
         role: roleObj._id,
         status: true
       });

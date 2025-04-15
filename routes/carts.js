@@ -49,7 +49,30 @@ router.get('/add/:productId', check_authentication, async (req, res) => {
   res.redirect('/carts');
 });
 
+router.post('/update-quantity/:productId', check_authentication, async (req, res) => {
+  try {
+    const userId = req.session.userId;
+    const { productId } = req.params;
+    const { change, isAbsolute } = req.body;
 
+    const cart = await cartSchema.findOne({ userId });
+    if (!cart) return res.status(404).json({ error: 'Cart not found' });
+
+    const item = cart.items.find(item => item.productId.toString() === productId);
+    if (!item) return res.status(404).json({ error: 'Item not found in cart' });
+
+    const newQuantity = isAbsolute ? parseInt(change) : item.quantity + parseInt(change);
+    if (newQuantity > item.productId.stock) {
+      return res.status(400).json({ error: 'Không đủ số lượng trong kho' });
+    }
+    item.quantity = Math.max(1, newQuantity);
+
+    await cart.save();
+    res.json({ success: true });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
 
 router.post('/', check_authentication, async function (req, res) {
   try {

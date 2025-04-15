@@ -17,10 +17,8 @@ block content
         p.text-muted Mô tả: #{product.description || 'Không có mô tả'}
 
         // Nút thao tác
-        button.btn.btn-secondary.disabled Sản phẩm đã hết hàng
-        button.btn.btn-outline-danger.ms-2 Yêu Thích
-        button.btn.btn-outline-danger.ms-2 So Sánh
+        if product.stock > 0
+          a.btn.btn-primary(href=`/carts/add/${product._id}`) Thêm vào giỏ hàng
+        else  
+          button.btn.btn-secondary.disabled Sản phẩm đã hết hàng
 
-    hr.my-5
-    h5.text-center.text-primary GỢI Ý SẢN PHẨM
-    // Gợi ý: đoạn này bạn có thể thêm danh sách sản phẩm khác bằng JS hoặc dữ liệu từ backend

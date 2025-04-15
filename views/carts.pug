@@ -24,7 +24,17 @@ block content
                 img(src=item.productId.imageUrl, width='60')
               td= item.productId.name
               td= item.productId.price.toLocaleString() + ' VND'
-              td= item.quantity
+              td= item.productId.stock
+              td
+                .input-group
+                  input.form-control.form-control-sm.text-center(
+                    type='number'
+                    value=item.quantity
+                    min='1'
+                    max=item.productId.stock
+                    style='width: 30px'
+                    onchange=`updateQuantity('${item.productId._id}', this.value, true)`
+                  )
               td= (item.productId.price * item.quantity).toLocaleString() + ' VND'
               td
                 form(action='/carts/remove/' + item.productId._id, method='POST')
@@ -45,3 +55,25 @@ block content
           | Thanh toán
     else
       p.text-muted Không có sản phẩm nào trong giỏ hàng.
+
+  script.
+    async function updateQuantity(productId, change, isAbsolute = false) {
+      try {
+        const response = await fetch(`/carts/update-quantity/${productId}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ 
+            change: parseInt(change),
+            isAbsolute: isAbsolute
+          })
+        });
+
+        if (response.ok) {
+          window.location.reload();
+        }
+      } catch (error) {
+        console.error('Error updating quantity:', error);
+      }
+    }

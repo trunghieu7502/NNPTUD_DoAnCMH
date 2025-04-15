@@ -19,7 +19,7 @@ let fs = require('fs')
 router.post('/signup', SignUpValidator, validate, async function (req, res, next) {
     try {
         await userController.CreateAnUser(
-            req.body.username, req.body.password, req.body.email, 'user'
+            req.body.username, req.body.password, req.body.email, req.body.phone, 'user'
         );
         // Chuyển hướng sau khi đăng ký
         res.redirect('/auth/login');
