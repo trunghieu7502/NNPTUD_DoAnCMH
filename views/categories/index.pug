@@ -28,8 +28,7 @@ block content
                   a.btn.btn-sm.btn-warning(href='/categories/edit/' + category._id) 
                     i.fas.fa-edit 
                     | Sửa
-                  form.d-inline-block.delete-form(action='/categories/' + category._id, method='POST')
-                    input(type='hidden', name='_method', value='DELETE')
+                  form.d-inline-block.delete-form(action='/categories/' + category._id + '?_method=DELETE', method='POST')
                     button.btn.btn-sm.btn-danger(type='submit')
                       i.fas.fa-trash 
                       | Xoá
