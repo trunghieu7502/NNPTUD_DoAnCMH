@@ -30,7 +30,7 @@ router.get('/:id', check_authentication, async (req, res) => {
 router.get('/', check_authentication, async (req, res) => {
   try {
     const orders = await orderSchema.find().populate('userId').populate('items.productId');
-    res.status(200).send({ success: true, data: orders });
+    res.render('admin/order-list', { orders });
   } catch (error) {
     res.status(500).send({ success: false, message: error.message });
   }
@@ -47,24 +47,33 @@ router.post('/', check_authentication, async (req, res) => {
   }
 });
 
-// ✅ Cập nhật đơn hàng
-router.put('/:id', check_authentication, async (req, res) => {
+// Trang sửa đơn hàng (render form)
+router.get('/:id/edit', check_authentication, check_authorization(constants.MOD_PERMISSION), async (req, res) => {
   try {
-    const updated = await orderSchema.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    res.status(200).send({ success: true, data: updated });
-  } catch (error) {
-    res.status(400).send({ success: false, message: error.message });
+    const order = await orderSchema.findById(req.params.id).populate('items.productId').populate('userId');
+    res.render('admin/order-edit', { order });
+  } catch (err) {
+    res.status(404).send({ success: false, message: err.message });
   }
 });
 
-// ✅ Xoá đơn hàng (yêu cầu quyền MOD)
-router.delete('/:id', check_authentication, check_authorization(constants.MOD_PERMISSION), async (req, res) => {
+// Xử lý cập nhật đơn hàng từ form
+router.post('/:id/edit', check_authentication, check_authorization(constants.MOD_PERMISSION), async (req, res) => {
+  try {
+    await orderSchema.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    res.redirect('/orders'); // hoặc res.redirect('/admin/orders') tùy cấu trúc
+  } catch (err) {
+    res.status(400).send({ success: false, message: err.message });
+  }
+});
+
+// Xử lý xoá đơn hàng (form submit)
+router.post('/:id/delete', check_authentication, check_authorization(constants.MOD_PERMISSION), async (req, res) => {
   try {
     await orderSchema.findByIdAndDelete(req.params.id);
-    res.status(200).send({ success: true });
-  } catch (error) {
-    res.status(400).send({ success: false, message: error.message });
+    res.redirect('/orders');
+  } catch (err) {
+    res.status(400).send({ success: false, message: err.message });
   }
 });
-
 module.exports = router;

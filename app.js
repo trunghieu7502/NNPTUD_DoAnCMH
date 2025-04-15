@@ -1,96 +1,98 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
-var mongoose = require('mongoose')
-let { CreateSuccessResponse, CreateErrorResponse } = require('./utils/responseHandler')
-let constants = require("./utils/constants")
-let cors = require('cors')
-let { check_authentication } = require('./utils/check_auth');
+const createError = require('http-errors');
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
+const mongoose = require('mongoose');
+const cors = require('cors');
 const session = require('express-session');
+const methodOverride = require('method-override');
+
+const constants = require('./utils/constants');
 const getUserFromToken = require('./middlewares/getUserFromToken');
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
 
+const indexRouter = require('./routes/index');
+const usersRouter = require('./routes/users');
+const authRouter = require('./routes/auth');
+const menusRouter = require('./routes/menus');
+const rolesRouter = require('./routes/roles');
+const productsRouter = require('./routes/products');
+const categoriesRouter = require('./routes/categories');
+const checkoutRouter = require('./routes/checkout');
+const adminRouter = require('./routes/admin');
+const ordersRouter = require('./routes/orders');
+const cartsRouter = require('./routes/carts');
+const reviewsRouter = require('./routes/reviews');
+const uploadRouter = require('./routes/upload');
+const shippingRouter = require('./routes/shippingInfos');
+const profileRouter = require('./routes/profile');
 
+const { CreateErrorResponse } = require('./utils/responseHandler');
 
-var app = express();
+const app = express();
 
-app.use(cors({
-  origin: '*'
-}))
-
+// 🟢 Kết nối MongoDB
 mongoose.connect("mongodb://127.0.0.1:27017/S6");
 mongoose.connection.on('connected', () => {
-  console.log("connected");
-})
+  console.log("✅ MongoDB connected");
+});
 
 require('./schemas/user');
-
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'pug');
-app.use(express.static(path.join(__dirname, 'public')));
+require('./schemas/role');
+// 📦 Middleware Setup
+app.use(cors({ origin: '*' }));
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(methodOverride('_method'));
 app.use(cookieParser(constants.SECRET_KEY_COOKIE));
-
 app.use(session({
   secret: 's6-secret-key',
   resave: false,
   saveUninitialized: false,
   cookie: {
     secure: false,
-    maxAge: 1000 * 60 * 60
+    maxAge: 60 * 60 * 1000 // 1 giờ
   }
 }));
 
-app.use(getUserFromToken); // <== Bỏ xuống dưới session
+// 🧠 Gắn user vào res.locals để pug sử dụng được
+app.use(getUserFromToken);
 
-
+// 📁 Static & View Engine
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(check_authentication);
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'pug');
 
-
+// 📌 Routes
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/auth', require('./routes/auth'));
-app.use('/menus', require('./routes/menus'));
-app.use('/roles', require('./routes/roles'));
-app.use('/products', require('./routes/products'));
-app.use('/categories', require('./routes/categories'));
-app.use('/checkout', require('./routes/checkout'));
-app.use('/admin', require('./routes/admin'));
+app.use('/auth', authRouter);
+app.use('/menus', menusRouter);
+app.use('/roles', rolesRouter);
+app.use('/products', productsRouter);
+app.use('/categories', categoriesRouter);
+app.use('/checkout', checkoutRouter);
+app.use('/admin', adminRouter);
+app.use('/admin/orders', ordersRouter);
 
+app.use('/orders', ordersRouter);
+app.use('/carts', cartsRouter);
+app.use('/reviews', reviewsRouter);
+app.use('/upload', uploadRouter);
+app.use('/shippingInfos', shippingRouter);
+app.use('/profile', profileRouter);
 
-app.use('/orders', require('./routes/orders'));
-app.use('/carts', require('./routes/carts'));
-app.use('/reviews', require('./routes/reviews'));
-app.use('/upload', require('./routes/upload'));
-app.use('/shippingInfos', require('./routes/shippingInfos'));
-app.use('/profile', require('./routes/profile'));
-
-
-
-
-// catch 404 and forward to error handler
+// ❌ 404 Not Found
 app.use(function (req, res, next) {
   next(createError(404));
 });
 
-// error handler
+// ❌ Error Handler
 app.use(function (err, req, res, next) {
-  // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  // render the error page
-  CreateErrorResponse(res, err.status || 500, err.message)
+  CreateErrorResponse(res, err.status || 500, err.message);
 });
-
-
-//
 
 module.exports = app;

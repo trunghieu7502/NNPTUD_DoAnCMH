@@ -1,17 +1,19 @@
 let mongoose = require('mongoose')
 let roleSchema = new mongoose.Schema({
-    name:{
-        type:String,
-        unique:true,
-        required:true,
-    },description:{
-        type:String,
-        default:""
+    name: {
+        type: String,
+        unique: true,
+        required: true,
+    }, description: {
+        type: String,
+        default: ""
     }
-},{
-    timestamps:true
+}, {
+    timestamps: true
 })
-module.exports = mongoose.model('role',roleSchema)
+module.exports = mongoose.model('Role', roleSchema); // ✅ không cần tham số thứ 3
+
+
 /*
 username: string, unique, required
 password: string,required

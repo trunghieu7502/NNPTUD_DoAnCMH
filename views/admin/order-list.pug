@@ -1,0 +1,41 @@
+extends ../layout
+
+block title
+  | Quản lý Đơn hàng
+
+block content
+  .container.mt-5
+    h2.text-primary.mb-4 Quản lý đơn hàng
+
+    if orders.length === 0
+      p.text-muted Không có đơn hàng nào.
+    else
+      table.table.table-bordered.table-hover
+        thead.table-dark
+          tr
+            th Mã đơn
+            th Người đặt
+            th Sản phẩm
+            th Tổng tiền
+            th Địa chỉ
+            th Thanh toán
+            th Ngày tạo
+            th Hành động
+        tbody
+          each order in orders
+            tr
+              td #{order._id}
+              td #{order.userId && order.userId.username ? order.userId.username : 'Ẩn'}
+              td
+                ul
+                  each item in order.items
+                    li
+                      | #{item.productId && item.productId.name ? item.productId.name : 'Sản phẩm không tồn tại'} - SL: #{item.quantity} 
+              td #{order.totalPrice.toLocaleString()} VND
+              td #{order.shippingAddress}, #{order.ward}, #{order.district}, #{order.city}
+              td #{order.paymentMethod}
+              td #{new Date(order.createdAt).toLocaleDateString()}
+              td
+                a.btn.btn-sm.btn-warning(href=`/orders/${order._id}/edit`) Sửa
+                form(method='POST', action=`/orders/${order._id}/delete`, style='display:inline')
+                  button.btn.btn-sm.btn-danger(type='submit', onclick='return confirm("Xác nhận xoá đơn hàng?")') Xoá

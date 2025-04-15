@@ -46,8 +46,9 @@ module.exports = {
     },
 
     DeleteCategory: async function (id) {
-        const deleted = await categorySchema.findByIdAndDelete(id);
-        if (!deleted) throw new Error("Không tìm thấy danh mục để xóa");
-        return { message: "Đã xóa danh mục thành công" };
+        const deleted = await categorySchema.findByIdAndUpdate(id, { isDeleted: true });
+        if (!deleted) throw new Error("Không tìm thấy danh mục để xoá mềm");
+        return { message: "Đã xoá mềm danh mục thành công" };
     }
+
 };

@@ -28,6 +28,10 @@ let userSchema = new mongoose.Schema({
         type: String,
         default: ""
     },
+    isDeleted: {
+        type: Boolean,
+        default: false
+    },
     status: {
         type: Boolean,
         default: false
@@ -37,7 +41,7 @@ let userSchema = new mongoose.Schema({
         min: 0
     }, role: {
         type: mongoose.Types.ObjectId,
-        ref: 'role',
+        ref: 'Role',
         required: true
     },
     resetPasswordToken: String,

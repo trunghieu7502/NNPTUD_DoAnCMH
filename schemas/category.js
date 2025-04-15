@@ -1,21 +1,26 @@
-let mongoose = require('mongoose');
+const mongoose = require('mongoose');
 
-let categorySchema = mongoose.Schema({
-    name:{
-        type:String,
-        required:true,
-        unique:true,
-    },description:{
-        type:String,
-        default:""
+const categorySchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: [true, "Tên danh mục là bắt buộc"],
+        unique: true,
+        trim: true
+    },
+    description: {
+        type: String,
+        default: ""
+    },
+    slug: {
+        type: String,
+        trim: true
     },
     isDeleted: {
         type: Boolean,
         default: false
-    },
-    slug:String
-},{
-    timestamps:true
-})
-module.exports = mongoose.model('category',categorySchema)
-// Tao 1 schema cho obj category gồm name,description, timestamp
+    }
+}, {
+    timestamps: true // Tự động thêm createdAt và updatedAt
+});
+
+module.exports = mongoose.model('category', categorySchema);

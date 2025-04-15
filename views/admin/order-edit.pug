@@ -1,0 +1,24 @@
+extends ../layout
+
+block title
+  | Sửa đơn hàng
+
+block content
+  .container.mt-5
+    h2.text-primary.mb-4 Chỉnh sửa đơn hàng
+
+    form(method='POST', action=`/orders/${order._id}/edit`)
+      .mb-3
+        label.form-label(for='shippingAddress') Địa chỉ giao hàng
+        input.form-control(type='text', name='shippingAddress', value=order.shippingAddress || '')
+
+      .mb-3
+        label.form-label(for='totalPrice') Tổng tiền (VND)
+        input.form-control(type='number', name='totalPrice', value=order.totalPrice)
+
+      .mb-3
+        label.form-label(for='paymentMethod') Phương thức thanh toán
+        select.form-select(name='paymentMethod')
+          option(value='COD', selected=order.paymentMethod==='COD') COD
+          option(value='VNPAY', selected=order.paymentMethod==='VNPAY') VNPAY
+          option(value='Bank', selected=order.payment

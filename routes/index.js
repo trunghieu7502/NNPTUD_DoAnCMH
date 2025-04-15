@@ -6,8 +6,21 @@ let productSchema = require('../schemas/product')
 /* GET home page. */
 router.get('/', async function (req, res, next) {
   try {
-    const products = await productSchema.find({ isDeleted: false }).limit(10).sort({ createdAt: -1 });
-    res.render('homepage', { title: 'Trang chủ', products }); // ✅ TRUYỀN `products`
+    const latestProducts = await productSchema
+      .find({ isDeleted: false })
+      .sort({ createdAt: -1 })
+      .limit(8);
+
+    const randomProducts = await productSchema.aggregate([
+      { $match: { isDeleted: false } },
+      { $sample: { size: 8 } } // Lấy ngẫu nhiên 8 sản phẩm
+    ]);
+
+    res.render('homepage', {
+      title: 'Trang chủ',
+      latestProducts,
+      randomProducts
+    });
   } catch (err) {
     next(err);
   }

@@ -38,7 +38,7 @@ router.put('/:id',check_authentication,check_authorization(constants.ADMIN_PERMI
   try {
     let body = req.body;
     let id = req.params.id;
-    let updatedRole = await roleController.UpdateARole(id, body.name);
+    let updatedRole = await roleController.UpdateARole(id, body.name, body.description);
     CreateSuccessResponse(res, 200, updatedRole);
   } catch (error) {
     CreateErrorResponse(res, 404, error.message)

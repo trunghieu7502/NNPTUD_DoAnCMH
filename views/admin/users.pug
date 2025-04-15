@@ -1,0 +1,30 @@
+extends ../layout
+
+block title
+  | Quản lý người dùng
+
+block content
+  .container
+    h2.mt-3 Quản lý người dùng
+    if users.length > 0
+      table.table.table-bordered.table-hover
+        thead.table-light
+          tr
+            th Tên đăng nhập
+            th Email
+            th Họ tên
+            th Vai trò
+            th.text-center Hành động
+        tbody
+          each user in users
+            tr
+              td= user.username
+              td= user.email
+              td= user.fullname
+              td= user.role && user.role.name || 'Chưa phân quyền'
+              td.text-center
+                a.btn.btn-sm.btn-warning(href='/users/' + user._id) Xem
+                form.d-inline-block(method='POST', action='/users/' + user._id + '?_method=DELETE')
+                  button.btn.btn-sm.btn-danger(type='submit') Xoá
+    else
+      .alert.alert-info Không có người dùng nào

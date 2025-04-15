@@ -26,11 +26,11 @@ router.get('/:id', check_authentication, async function (req, res) {
   }
 });
 
-router.post('/add/:productId', check_authentication, async (req, res) => {
+router.get('/add/:productId', check_authentication, async (req, res) => {
   const userId = req.session.userId;
   const { productId } = req.params;
 
-  if (!userId) return res.redirect('/auth/login'); // hoặc trả lỗi
+  if (!userId) return res.redirect('/auth/login');
 
   let cart = await cartSchema.findOne({ userId });
 
@@ -42,12 +42,13 @@ router.post('/add/:productId', check_authentication, async (req, res) => {
   if (existingItem) {
     existingItem.quantity += 1;
   } else {
-    cart.items.push({ productId, quantity: 1 }); // ✅ sửa ở đây
+    cart.items.push({ productId, quantity: 1 });
   }
 
   await cart.save();
   res.redirect('/carts');
 });
+
 
 
 router.post('/', check_authentication, async function (req, res) {
